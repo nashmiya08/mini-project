@@ -5,48 +5,36 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Bake Fail Doctor</title>
-
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: #fff7f0;
       color: #422b24;
+      line-height: 1.6;
     }
-
     header {
       background: #713f32;
       color: white;
       text-align: center;
-      padding: 30px 15px;
+      padding: 28px 15px;
     }
-
-    header h1 {
-      margin: 0 0 10px;
-    }
-
     nav {
       background: #4f2b23;
       padding: 12px;
       text-align: center;
     }
-
     nav a {
       color: white;
       text-decoration: none;
-      margin: 0 12px;
+      margin: 0 10px;
     }
-
     main {
       max-width: 850px;
       margin: 25px auto;
       padding: 0 15px;
     }
-
     .card {
       background: white;
       border-radius: 12px;
@@ -54,43 +42,38 @@
       margin-bottom: 22px;
       box-shadow: 0 3px 12px #00000010;
     }
-
-    h2, h3 {
-      color: #713f32;
-    }
-
+    h2, h3 { color: #713f32; }
     label {
       display: block;
-      margin-top: 18px;
-      margin-bottom: 7px;
+      margin: 13px 0 6px;
       font-weight: bold;
     }
-
     input, select {
       width: 100%;
-      padding: 12px;
+      padding: 11px;
       border: 1px solid #cdb6a9;
       border-radius: 7px;
       font-size: 15px;
       background: white;
     }
-
+    .fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
     button {
       width: 100%;
-      padding: 14px;
-      margin-top: 20px;
+      padding: 13px;
+      margin-top: 18px;
       background: #8d4d39;
       color: white;
       border: none;
       border-radius: 7px;
       font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
     }
-
-    button:hover {
-      background: #633426;
-    }
-
+    button:hover { background: #633426; }
     #preview {
       display: none;
       max-width: 100%;
@@ -98,18 +81,20 @@
       margin: 15px auto;
       border-radius: 8px;
     }
-
-    #result {
-      display: none;
-    }
-
+    #result, #recipeResult { display: none; }
     .notice {
       background: #fff0d9;
       padding: 12px;
       border-radius: 7px;
       margin-top: 15px;
     }
-
+    .result-box {
+      background: #fff7f0;
+      border-left: 4px solid #8d4d39;
+      padding: 12px;
+      margin: 12px 0;
+      border-radius: 5px;
+    }
     footer {
       background: #4f2b23;
       color: white;
@@ -117,58 +102,55 @@
       padding: 20px;
       margin-top: 35px;
     }
-
-    li {
-      margin-bottom: 8px;
+    li { margin-bottom: 8px; }
+    .small { font-size: 13px; color: #79645b; }
+    @media (max-width: 520px) {
+      .fields { grid-template-columns: 1fr; }
+      .card { padding: 17px; }
     }
   </style>
 </head>
-
 <body>
 
 <header>
   <h1>🧁 AI Bake Fail Doctor</h1>
-  <p>Detect baking problems and improve your next bake!</p>
+  <p>Understand baking failures. Adjust your recipe. Bake better!</p>
 </header>
 
 <nav>
   <a href="#diagnose">Diagnose</a>
-  <a href="#how">How It Works</a>
+  <a href="#recipe">Adjust Recipe</a>
   <a href="#about">About</a>
 </nav>
 
 <main>
-
   <section class="card">
     <h2>Welcome to AI Bake Fail Doctor</h2>
     <p>
-      AI Bake Fail Doctor is a mini project designed to help users
-      understand common baking failures. Upload a photo, select the
-      problem you observe, and view possible causes and solutions
-      based on baking science.
+      Upload a photo of a failed baked item, select the problem you
+      observed, and receive possible causes, troubleshooting advice
+      and suggested recipe adjustments for your next baking attempt.
     </p>
   </section>
 
   <section class="card" id="diagnose">
-    <h2>🔍 Baking Failure Diagnosis</h2>
+    <h2>🔍 1. Diagnose Baking Problem</h2>
 
     <form id="bakeForm">
-
-      <label for="photo">Upload your failed baked item's image</label>
+      <label for="photo">Upload baked item's photo</label>
       <input type="file" id="photo" accept="image/*">
+      <img id="preview" alt="Preview of uploaded baked item">
 
-      <img id="preview" alt="Uploaded baking image preview">
-
-      <label for="product">Select the baked product</label>
+      <label for="product">Baked product</label>
       <select id="product">
         <option value="Brownie">Brownie</option>
         <option value="Cake">Cake</option>
         <option value="Cookie">Cookie</option>
         <option value="Bread">Bread</option>
-        <option value="Other baked item">Other baked item</option>
+        <option value="Other">Other baked item</option>
       </select>
 
-      <label for="symptom">Select the observed problem</label>
+      <label for="symptom">Problem observed</label>
       <select id="symptom">
         <option value="burnt">Burnt or too dark</option>
         <option value="pale">Pale or weak browning</option>
@@ -178,16 +160,18 @@
         <option value="spread">Cookie spread too much</option>
         <option value="cracks">Cracked or peaked top</option>
         <option value="underbaked">Gummy or underbaked centre</option>
+        <option value="oily">Oily or greasy brownie</option>
+        <option value="cakey">Cakey instead of fudgy brownie</option>
+        <option value="hard">Hard or overbaked brownie</option>
+        <option value="crinkle">Brownie has no crinkle top</option>
       </select>
 
-      <button type="submit">Diagnose Baking Problem</button>
-
+      <button type="submit">Diagnose Problem</button>
     </form>
   </section>
 
   <section class="card" id="result" aria-live="polite">
     <h2>🩺 Diagnosis Report</h2>
-
     <h3 id="resultName"></h3>
     <p id="description"></p>
 
@@ -198,40 +182,106 @@
     <ul id="fixes"></ul>
 
     <div class="notice">
-      <strong>Note:</strong> This initial version uses rule-based
-      troubleshooting. The selected symptom determines the advice;
-      the uploaded image is displayed but is not automatically analysed.
-      Actual image recognition can be added after dataset preparation,
-      preprocessing and model training.
+      These are possible explanations based on your selected symptom.
+      The photo is not automatically analysed in this prototype.
     </div>
   </section>
 
-  <section class="card" id="how">
-    <h2>💡 How It Works</h2>
-    <ol>
-      <li>Upload a photograph of the failed baked item.</li>
-      <li>Select the type of baked product.</li>
-      <li>Choose the baking problem observed.</li>
-      <li>View possible causes based on baking science.</li>
-      <li>Follow the suggested solutions for the next baking attempt.</li>
-    </ol>
+  <section class="card" id="recipe">
+    <h2>🧪 2. Recipe Adjustment</h2>
+    <p>
+      Enter the quantities from your current recipe. The system will
+      use your selected baking problem to suggest what you could test
+      in your next batch.
+    </p>
+
+    <form id="recipeForm">
+      <label for="recipeProduct">Recipe type</label>
+      <select id="recipeProduct">
+        <option value="brownie">Brownie</option>
+        <option value="cake">Cake</option>
+        <option value="cookie">Cookie</option>
+        <option value="bread">Bread</option>
+        <option value="other">Other</option>
+      </select>
+
+      <div class="fields">
+        <div>
+          <label for="flour">Flour (g)</label>
+          <input type="number" id="flour" min="0" step="any" placeholder="e.g. 100">
+        </div>
+        <div>
+          <label for="sugar">Sugar (g)</label>
+          <input type="number" id="sugar" min="0" step="any" placeholder="e.g. 120">
+        </div>
+        <div>
+          <label for="fat">Butter / oil (g)</label>
+          <input type="number" id="fat" min="0" step="any" placeholder="e.g. 80">
+        </div>
+        <div>
+          <label for="eggs">Eggs (number)</label>
+          <input type="number" id="eggs" min="0" step="any" placeholder="e.g. 2">
+        </div>
+        <div>
+          <label for="liquid">Milk / water (g or ml)</label>
+          <input type="number" id="liquid" min="0" step="any" placeholder="e.g. 50">
+        </div>
+        <div>
+          <label for="leavener">Baking powder / soda (g)</label>
+          <input type="number" id="leavener" min="0" step="any" placeholder="e.g. 4">
+        </div>
+        <div>
+          <label for="temperature">Oven temperature (°C)</label>
+          <input type="number" id="temperature" min="50" max="300" step="1" placeholder="e.g. 180">
+        </div>
+        <div>
+          <label for="time">Baking time (minutes)</label>
+          <input type="number" id="time" min="1" max="300" step="1" placeholder="e.g. 25">
+        </div>
+      </div>
+
+      <p class="small">
+        Enter the ingredients you use. Leave fields blank if they do
+        not apply. Ingredient adjustments are suggestions to test,
+        not a guaranteed replacement recipe.
+      </p>
+
+      <button type="submit">Adjust My Recipe</button>
+    </form>
+  </section>
+
+  <section class="card" id="recipeResult" aria-live="polite">
+    <h2>🥣 Suggested Recipe Adjustments</h2>
+    <p id="recipeSummary"></p>
+
+    <h3>Current Recipe</h3>
+    <ul id="currentRecipe"></ul>
+
+    <h3>Suggested Changes for Next Batch</h3>
+    <ul id="recipeChanges"></ul>
+
+    <div class="result-box">
+      <strong>Testing tip:</strong>
+      Keep a record of your original recipe and change one important
+      variable at a time. Compare the next batch before making further
+      changes.
+    </div>
   </section>
 
   <section class="card" id="about">
     <h2>📘 About the Project</h2>
     <p>
-      The objective of AI Bake Fail Doctor is to develop a system
-      that can identify common baking defects and recommend suitable
-      corrections. This prototype demonstrates the user interface
-      and rule-based diagnosis process.
+      AI Bake Fail Doctor aims to identify baking defects, explain
+      their possible causes using baking science, and suggest recipe
+      adjustments to improve future baking results.
     </p>
     <p>
-      Future development can include dataset collection, image
-      preprocessing, training an image-classification model and
-      connecting model predictions to baking recommendations.
+      This initial version uses manually selected symptoms and
+      rule-based suggestions. A trained image-classification model
+      and a verified recipe knowledge base can be added after dataset
+      collection and preprocessing.
     </p>
   </section>
-
 </main>
 
 <footer>
@@ -255,40 +305,37 @@
         "Try a lower rack position if the top browns too quickly."
       ]
     },
-
     pale: {
       name: "Pale or Weak Browning",
-      description: "The baked item may not have browned sufficiently.",
+      description: "The surface may not have browned sufficiently.",
       causes: [
-        "Oven temperature may be too low.",
-        "Baking time may be too short.",
+        "Oven temperature may be too low or baking time too short.",
+        "Sugar type and moisture affect browning.",
         "The oven may not have been fully preheated."
       ],
       fixes: [
         "Preheat the oven fully.",
-        "Check doneness rather than relying on colour alone.",
-        "Verify the recipe's ingredient measurements."
+        "Check doneness rather than colour alone.",
+        "Verify ingredient measurements."
       ]
     },
-
     collapse: {
       name: "Collapsed or Sunken Centre",
-      description: "The structure may not have set properly.",
+      description: "The product's structure may not have set properly.",
       causes: [
         "The centre may be underbaked.",
-        "Excess liquid or leavening may affect the structure.",
+        "Excess liquid or leavening may affect structure.",
         "Opening the oven too early can disturb rising cakes."
       ],
       fixes: [
-        "Measure all ingredients accurately.",
-        "Use the pan size specified in the recipe.",
+        "Check ingredient and leavening measurements.",
+        "Use the specified pan size.",
         "Check the centre is baked before removing the product."
       ]
     },
-
     dense: {
       name: "Dense or Heavy Texture",
-      description: "The baked item may not have developed enough air or structure.",
+      description: "The product may not have developed enough air or structure.",
       causes: [
         "Insufficient aeration or inactive leavening.",
         "Incorrect ingredient proportions.",
@@ -296,32 +343,30 @@
       ],
       fixes: [
         "Weigh ingredients accurately.",
-        "Check the freshness of baking powder or baking soda if used.",
-        "Follow the mixing instructions in the recipe."
+        "Check leavener freshness if the recipe uses it.",
+        "Follow the recipe's mixing instructions."
       ]
     },
-
     dry: {
       name: "Dry or Crumbly Result",
       description: "The product may have lost too much moisture.",
       causes: [
         "Baking time may have been too long.",
         "Too much flour may have been added.",
-        "Ingredient proportions may be unbalanced."
+        "The ingredient balance may be unsuitable."
       ],
       fixes: [
-        "Weigh flour instead of estimating quantities.",
+        "Weigh flour accurately.",
         "Check doneness earlier next time.",
-        "Measure butter, oil, eggs and liquids accurately."
+        "Measure liquids and fats carefully."
       ]
     },
-
     spread: {
       name: "Cookie Spread Too Much",
       description: "The dough may have spread before its structure set.",
       causes: [
         "Butter may have been too warm.",
-        "The dough's fat, flour and sugar balance may be unsuitable.",
+        "The flour, fat and sugar balance may be unsuitable.",
         "The baking tray may have been warm."
       ],
       fixes: [
@@ -330,37 +375,93 @@
         "Use a cool baking tray."
       ]
     },
-
     cracks: {
       name: "Cracked or Peaked Top",
-      description: "Cracking can result from expansion and is normal for some brownie styles.",
+      description: "Cracking can occur through expansion and may be normal for some brownies.",
       causes: [
         "Oven temperature may be too high for the recipe.",
-        "The mixing method may affect the surface.",
+        "Mixing method can affect the surface.",
         "Some brownies naturally develop a crackly crust."
       ],
       fixes: [
-        "Compare the result with the intended product style.",
-        "Check ingredient measurements and oven temperature.",
-        "For cakes, test a slightly lower temperature if excessive cracking occurs."
+        "Check oven temperature and ingredient measurements.",
+        "Follow the recipe's mixing method.",
+        "For cakes, test a slightly lower temperature if cracking is excessive."
       ]
     },
-
     underbaked: {
       name: "Gummy or Underbaked Centre",
       description: "The centre may not have set sufficiently.",
       causes: [
         "The centre may not have received enough heat.",
-        "The outside may brown before the centre finishes baking.",
-        "The pan size or fill level may affect baking time."
+        "The outside may brown before the centre finishes.",
+        "Pan size and fill level affect baking time."
       ],
       fixes: [
-        "Check doneness using a test appropriate for the product.",
+        "Use a doneness test appropriate for the product.",
         "For cake, check for wet batter in the centre.",
         "For fudgy brownies, moist crumbs can be normal."
       ]
+    },
+    oily: {
+      name: "Oily or Greasy Brownie",
+      description: "Fat may have separated or the recipe balance may need review.",
+      causes: [
+        "Butter and chocolate may not have combined evenly.",
+        "The fat-to-dry-ingredient balance may be unsuitable.",
+        "The mixing method may have differed from the recipe."
+      ],
+      fixes: [
+        "Melt and combine butter and chocolate gently.",
+        "Check ingredient weights against the original recipe.",
+        "Review the mixing order before changing quantities."
+      ]
+    },
+    cakey: {
+      name: "Cakey Instead of Fudgy Brownie",
+      description: "The brownie has a lighter crumb than intended.",
+      causes: [
+        "The formula may contain relatively more flour or leavener.",
+        "Too much air may have been incorporated.",
+        "The brownie may have been baked too long."
+      ],
+      fixes: [
+        "Check flour and leavener quantities.",
+        "Follow the recipe's mixing method.",
+        "Check doneness before the usual baking time ends."
+      ]
+    },
+    hard: {
+      name: "Hard or Overbaked Brownie",
+      description: "The brownie may have lost too much moisture during baking.",
+      causes: [
+        "Baking time may have been too long.",
+        "The oven may run hotter than its displayed setting.",
+        "The pan size may affect baking time."
+      ],
+      fixes: [
+        "Check the centre earlier in the next bake.",
+        "Verify oven temperature if possible.",
+        "Use the recipe's specified pan size."
+      ]
+    },
+    crinkle: {
+      name: "Brownie Has No Crinkle Top",
+      description: "A shiny crust depends on the recipe and mixing method.",
+      causes: [
+        "The sugar and egg proportions may affect crust formation.",
+        "The mixing method may not suit the recipe.",
+        "Different chocolate and sugar types can change the surface."
+      ],
+      fixes: [
+        "Use a tested recipe intended for a crackly top.",
+        "Follow its instructions for whisking eggs and sugar.",
+        "Follow the specified chocolate-melting and mixing process."
+      ]
     }
   };
+
+  let lastDiagnosis = null;
 
   const photo = document.getElementById("photo");
   const preview = document.getElementById("preview");
@@ -382,12 +483,10 @@
     }
 
     const reader = new FileReader();
-
     reader.onload = function (event) {
       preview.src = event.target.result;
       preview.style.display = "block";
     };
-
     reader.readAsDataURL(file);
   });
 
@@ -398,19 +497,251 @@
     const product = document.getElementById("product").value;
     const rule = rules[symptom];
 
+    lastDiagnosis = { symptom, product };
+
     document.getElementById("resultName").textContent = rule.name;
     document.getElementById("description").textContent =
       "Selected product: " + product + ". " + rule.description;
 
-    showItems("causes", rule.causes);
-    showItems("fixes", rule.fixes);
+    fillList("causes", rule.causes);
+    fillList("fixes", rule.fixes);
 
-    const result = document.getElementById("result");
-    result.style.display = "block";
-    result.scrollIntoView({ behavior: "smooth" });
+    document.getElementById("result").style.display = "block";
+
+    // Keep the recipe product consistent with the diagnosis.
+    const productMap = {
+      Brownie: "brownie",
+      Cake: "cake",
+      Cookie: "cookie",
+      Bread: "bread",
+      Other: "other"
+    };
+    document.getElementById("recipeProduct").value = productMap[product];
+
+    document.getElementById("result").scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
   });
 
-  function showItems(id, items) {
+  document.getElementById("recipeForm").addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const product = document.getElementById("recipeProduct").value;
+    const symptom = lastDiagnosis ? lastDiagnosis.symptom : null;
+
+    const fields = [
+      ["flour", "Flour", "g"],
+      ["sugar", "Sugar", "g"],
+      ["fat", "Butter / oil", "g"],
+      ["eggs", "Eggs", ""],
+      ["liquid", "Milk / water", "g or ml"],
+      ["leavener", "Baking powder / soda", "g"],
+      ["temperature", "Oven temperature", "°C"],
+      ["time", "Baking time", "minutes"]
+    ];
+
+    const entered = {};
+    fields.forEach(function (field) {
+      const raw = document.getElementById(field[0]).value;
+      entered[field[0]] = raw === "" ? null : Number(raw);
+    });
+
+    const currentItems = [];
+    fields.forEach(function (field) {
+      const value = entered[field[0]];
+      if (value !== null) {
+        currentItems.push(
+          field[1] + ": " + value + (field[2] ? " " + field[2] : "")
+        );
+      }
+    });
+
+    if (currentItems.length === 0) {
+      alert("Please enter at least one recipe quantity or baking setting.");
+      return;
+    }
+
+    const changes = [];
+    const temp = entered.temperature;
+    const time = entered.time;
+    const flour = entered.flour;
+    const sugar = entered.sugar;
+    const fat = entered.fat;
+    const eggs = entered.eggs;
+    const liquid = entered.liquid;
+    const leavener = entered.leavener;
+
+    if (!symptom) {
+      changes.push(
+        "Select a baking problem in the diagnosis section first for more specific suggestions."
+      );
+    }
+
+    if (symptom === "burnt" || symptom === "hard") {
+      if (temp !== null) {
+        changes.push(
+          "Test an oven setting about 10°C lower: " +
+          (temp - 10) + "°C. Keep other variables unchanged for this test."
+        );
+      }
+      if (time !== null) {
+        changes.push(
+          "Check the product " + Math.max(1, time - 3) +
+          " minutes into baking as an early doneness check; this is not a guaranteed finish time."
+        );
+      }
+    }
+
+    if (symptom === "pale") {
+      if (temp !== null) {
+        changes.push(
+          "First verify the actual oven temperature and full preheating. Do not raise the temperature until doneness and browning have been checked."
+        );
+      }
+      if (time !== null) {
+        changes.push(
+          "If the centre is not done, test a small time increase of about 2–3 minutes, checking doneness as you go."
+        );
+      }
+    }
+
+    if (symptom === "underbaked" || symptom === "collapse") {
+      changes.push(
+        "Check the centre for doneness and confirm the pan size and fill level before changing ingredient ratios."
+      );
+      if (temp !== null && symptom === "underbaked") {
+        changes.push(
+          "If the outside is already dark but the centre remains raw, test a temperature about 10°C lower with a longer bake."
+        );
+      }
+      if (liquid !== null && flour !== null) {
+        changes.push(
+          "Review the liquid-to-flour balance against a tested recipe. Do not reduce liquid without checking the formula."
+        );
+      }
+      if (leavener !== null && symptom === "collapse") {
+        changes.push(
+          "Compare the leavener quantity with the original recipe before considering any reduction."
+        );
+      }
+    }
+
+    if (symptom === "dense") {
+      changes.push(
+        "Check mixing, ingredient weighing and leavener freshness before changing the formula."
+      );
+      if (leavener !== null) {
+        changes.push(
+          "Compare the entered leavener quantity with a trusted recipe for this product; do not automatically add more."
+        );
+      }
+    }
+
+    if (symptom === "dry") {
+      if (time !== null) {
+        changes.push(
+          "Test checking doneness about 2–3 minutes earlier than the current time of " +
+          time + " minutes."
+        );
+      }
+      if (fat !== null || liquid !== null) {
+        changes.push(
+          "Review the fat and liquid quantities against a tested recipe before increasing either ingredient."
+        );
+      }
+    }
+
+    if (symptom === "spread") {
+      changes.push(
+        "If the recipe allows it, chill the dough before baking and use a cool tray."
+      );
+      if (fat !== null && flour !== null) {
+        changes.push(
+          "Check the fat-to-flour balance against the original cookie recipe before reducing fat or adding flour."
+        );
+      }
+    }
+
+    if (symptom === "cracks") {
+      changes.push(
+        "Some brownie cracking is normal. For cake, check the oven temperature and avoid changing multiple ingredients at once."
+      );
+    }
+
+    if (symptom === "oily") {
+      changes.push(
+        "First improve the chocolate-and-fat mixing process and verify the ingredient weights. Do not automatically reduce butter or oil."
+      );
+      if (fat !== null) {
+        changes.push(
+          "Entered butter/oil quantity: " + fat + " g. Compare this with a tested formula before changing it."
+        );
+      }
+    }
+
+    if (symptom === "cakey") {
+      changes.push(
+        "For a fudgier brownie, compare the flour and leavener amounts with a tested fudgy brownie recipe. Avoid reducing flour without a reliable formula."
+      );
+      if (flour !== null) {
+        changes.push("Entered flour quantity: " + flour + " g.");
+      }
+      if (leavener !== null) {
+        changes.push(
+          "Entered leavener quantity: " + leavener +
+          " g. Some fudgy brownie recipes use no chemical leavener; follow your chosen recipe."
+        );
+      }
+      if (time !== null) {
+        changes.push(
+          "Check doneness before " + time +
+          " minutes have elapsed, while ensuring the centre is not raw."
+        );
+      }
+    }
+
+    if (symptom === "crinkle") {
+      changes.push(
+        "Follow a tested crackly-top brownie recipe's egg-and-sugar whisking instructions before changing ingredient quantities."
+      );
+      if (sugar !== null && eggs !== null) {
+        changes.push(
+          "Entered sugar: " + sugar + " g; eggs: " + eggs +
+          ". Compare these with the selected recipe rather than applying a universal ratio."
+        );
+      }
+    }
+
+    if (product === "bread" && symptom === "dense") {
+      changes.push(
+        "For bread, check yeast activity, kneading and proofing before changing the flour or water amounts."
+      );
+    }
+
+    if (changes.length === 0) {
+      changes.push(
+        "Select a problem in the diagnosis section to receive more specific suggestions."
+      );
+    }
+
+    if (currentItems.length === 0) {
+      currentItems.push("No recipe quantities entered.");
+    }
+
+    document.getElementById("recipeSummary").textContent =
+      "Product: " + product +
+      ". Suggestions are based on the selected symptom and the information you entered.";
+
+    fillList("currentRecipe", currentItems);
+    fillList("recipeChanges", changes);
+
+    const output = document.getElementById("recipeResult");
+    output.style.display = "block";
+    output.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  function fillList(id, items) {
     const list = document.getElementById(id);
     list.replaceChildren();
 
