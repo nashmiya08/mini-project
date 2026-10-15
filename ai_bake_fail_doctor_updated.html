@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Bake Fail Doctor</title>
+<style>
+  :root { --brown:#5b3427; --cream:#fff8ef; --peach:#f3d6c5; --ink:#2b211d; --muted:#6c5a52; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Arial, sans-serif; color:var(--ink); background:var(--cream); }
+  header { padding:34px 20px; text-align:center; color:white; background:linear-gradient(135deg,#633b2c,#a96b4c); }
+  header h1 { margin:0 0 8px; font-size:clamp(1.8rem,4vw,2.8rem); }
+  header p { margin:0 auto; max-width:760px; line-height:1.5; }
+  main { width:min(1050px,94%); margin:24px auto 48px; }
+  .notice { padding:14px 16px; border-left:5px solid #c17a36; background:#fff0d8; border-radius:8px; line-height:1.5; margin-bottom:20px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:18px; }
+  .card { background:white; padding:20px; border-radius:14px; box-shadow:0 4px 18px #4c2b1710; }
+  h2 { color:var(--brown); margin-top:0; }
+  label { display:block; font-weight:700; margin:13px 0 6px; }
+  input, select, textarea { width:100%; padding:10px; border:1px solid #d9c5b9; border-radius:8px; font:inherit; background:#fff; }
+  textarea { min-height:90px; resize:vertical; }
+  button { margin-top:16px; border:0; border-radius:9px; padding:12px 18px; background:var(--brown); color:white; font-weight:700; cursor:pointer; }
+  button:hover { background:#794b38; }
+  #preview { width:100%; max-height:300px; object-fit:contain; display:none; margin-top:12px; border-radius:8px; background:#f8f3ef; }
+  #report { margin-top:18px; line-height:1.6; }
+  .result { border-top:1px solid #eadbd2; margin-top:14px; padding-top:12px; }
+  .tag { display:inline-block; background:#f5e5db; padding:4px 9px; border-radius:99px; font-size:.85rem; }
+  ul { padding-left:22px; line-height:1.6; }
+  a { color:#8a4c2f; overflow-wrap:anywhere; }
+  small, .muted { color:var(--muted); line-height:1.5; }
+  footer { text-align:center; padding:20px; color:var(--muted); font-size:.9rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>AI Bake Fail Doctor</h1>
+  <p>Upload a photo, record your baking conditions, and explore likely causes using a starter baking-science knowledge base.</p>
+</header>
+<main>
+  <div class="notice"><strong>Prototype limitation:</strong> This version previews your photo but does not automatically classify it with a trained CNN. Choose the closest visible symptom below. The dataset links are research resources; the images are not bundled inside this HTML file.</div>
+  <div class="grid">
+    <section class="card">
+      <h2>1. Baking details</h2>
+      <label for="photo">Upload failed bake photo</label>
+      <input id="photo" type="file" accept="image/*">
+      <img id="preview" alt="Preview of uploaded baked product">
+      <label for="product">Baked product</label>
+      <select id="product">
+        <option value="cake">Cake</option><option value="bread">Bread</option>
+        <option value="cookie">Cookie</option><option value="brownie">Brownie</option>
+        <option value="pastry">Pastry / other</option>
+      </select>
+      <label for="symptom">Closest visible symptom</label>
+      <select id="symptom">
+        <option value="burnt">Too dark / burnt surface</option>
+        <option value="pale">Too pale / weak browning</option>
+        <option value="collapse">Collapsed or sunken centre</option>
+        <option value="dense">Dense / heavy texture</option>
+        <option value="dry">Dry / crumbly result</option>
+        <option value="spread">Cookie spread too much</option>
+        <option value="cracks">Cracked / peaked top</option>
+        <option value="underbaked">Gummy / underbaked centre</option>
+      </select>
+      <label for="temp">Oven temperature (°C)</label><input id="temp" type="number" min="0" max="350" placeholder="e.g. 180">
+      <label for="time">Baking time (minutes)</label><input id="time" type="number" min="0" max="300" placeholder="e.g. 25">
+      <label for="oven">Heating mode</label>
+      <select id="oven"><option value="unknown">Not sure</option><option value="both">Top and bottom rods</option><option value="top">Top rod only</option><option value="bottom">Bottom rod only</option><option value="fan">Fan / convection</option></select>
+      <label for="recipe">Recipe / observations (optional)</label>
+      <textarea id="recipe" placeholder="Ingredients in grams, pan size, mixing method, rack position, preheating, cooling…"></textarea>
+      <button id="diagnose">Generate likely diagnosis</button>
+      <div id="report" aria-live="polite"></div>
+    </section>
+    <section class="card">
+      <h2>2. Embedded baking-science rules</h2>
+      <p>This small rule base maps common visible symptoms to <em>possible</em> causes. A symptom can have several causes, so test one change at a time.</p>
+      <ul>
+        <li><strong>Burnt / too dark:</strong> oven may be too hot, baking time too long, or top heat too strong.</li>
+        <li><strong>Pale:</strong> temperature or time may be too low; sugar/formula and product type also affect browning.</li>
+        <li><strong>Collapse:</strong> structure may not have set; possible causes include excess liquid/leavening, poor mixing, or opening the oven early.</li>
+        <li><strong>Dense:</strong> insufficient aeration/leavening, excess liquid, incorrect ingredient ratios, or low oven temperature.</li>
+        <li><strong>Dry / crumbly:</strong> overbaking, excess flour, or formula imbalance.</li>
+        <li><strong>Excessive cookie spread:</strong> warm dough, soft/melted fat, or too little structure.</li>
+        <li><strong>Cracks / peaked top:</strong> oven may be too hot, batter may be too stiff, or pan/formula may be unsuitable.</li>
+        <li><strong>Gummy / underbaked:</strong> centre may need more baking; high heat can brown the outside before the centre sets.</li>
+      </ul>
+      <small>These are troubleshooting hypotheses, not a guaranteed diagnosis. Exact causes depend on the recipe and the product.</small>
+    </section>
+  </div>
+  <section class="card" style="margin-top:18px">
+    <h2>3. Dataset and reference resources</h2>
+    <p>These are external resources to download or inspect. Always check the licence, citation requirements, labels, and suitability before using a dataset in your project.</p>
+    <ul>
+      <li><strong>Bread defect images (Roboflow):</strong> 815 images; labels include crack, burnt, side_collapse, target_height and underbaked; listed as CC BY 4.0. Bread-focused, not a general cake/brownie dataset. <a href="https://universe.roboflow.com/lzy1223/bread-rydr2" target="_blank" rel="noopener">Open dataset</a></li>
+      <li><strong>AI bread quality dataset (USDA Ag Data Commons):</strong> bread colour/porosity images, metadata, porosity data and code; public-domain dedication CC0. <a href="https://catalog.data.gov/dataset/data-and-code-from-ai-based-bread-quality-assessment-using-image-processing-techniques-and" target="_blank" rel="noopener">Open dataset record</a></li>
+      <li><strong>W²SB-3 bread crumb/crust dataset:</strong> bread images with physical measurements such as size, colour and hardness. <a href="https://data.mendeley.com/datasets/f663p7c89m/1" target="_blank" rel="noopener">Open Mendeley Data</a></li>
+      <li><strong>Baking science / cake faults:</strong> common cake faults and possible causes. <a href="https://app.ckbk.com/section/prof36725c33s001ss001sss005/common-cake-faults-and-their-causes" target="_blank" rel="noopener">Read fault guide</a></li>
+      <li><strong>Professional Baking textbook:</strong> oven conditions, cake structure and baking guidance. <a href="https://resources.escoffier.edu/textbooks/gisslen/professional_baking7th.pdf" target="_blank" rel="noopener">Read textbook PDF</a></li>
+      <li><strong>Bakery troubleshooting guide:</strong> ingredient scaling, mixing, temperature and time. <a href="https://www.generalmillsfoodservice.com/culinary/product-training/troubleshooting-guide/bakery-problem-solving-guide" target="_blank" rel="noopener">Read guide</a></li>
+    </ul>
+    <div class="notice"><strong>To make this a real image AI:</strong> download a labelled dataset, prepare train/validation/test folders, train a CNN or transfer-learning model in Python, and connect its prediction API to this page. A dataset link alone does not train a model.</div>
+  </section>
+</main>
+<footer>AI Bake Fail Doctor — educational prototype</footer>
+<script>
+const rules = {
+  burnt: {
+    name:"Too dark / burnt surface",
+    causes:["Oven temperature may be too high.","Baking time may be too long.","Top rod or direct radiant heat may be too strong."],
+    fixes:["Check oven temperature with an oven thermometer.","Try reducing the temperature by 10–15°C or shortening the bake slightly; change only one variable.","If the top browns too quickly, use a lower rack or reduce top heat where your oven allows."]
+  },
+  pale: {
+    name:"Pale / weak browning",
+    causes:["Oven may be too cool or baking time too short.","The recipe and sugar type affect browning; visual colour alone cannot confirm doneness."],
+    fixes:["Verify the oven temperature and preheat fully.","Check doneness using the product-appropriate test, not colour alone.","Keep ingredient ratios consistent while testing time or temperature."]
+  },
+  collapse: {
+    name:"Collapsed / sunken centre",
+    causes:["The internal structure may not have set before cooling.","Possible contributors include excess liquid or leavening, poor mixing, or opening the oven early."],
+    fixes:["Confirm ingredient weights and leavening amounts.","Avoid opening the oven during the early rise/set period.","Check the centre is properly baked and cool the product as the recipe recommends."]
+  },
+  dense: {
+    name:"Dense / heavy texture",
+    causes:["Insufficient aeration or leavening may have limited volume.","Ingredient ratios, mixing method, or a low oven temperature may have contributed."],
+    fixes:["Weigh ingredients accurately.","Follow the recipe's mixing method; avoid both under-mixing and over-mixing where aeration matters.","Check leavening freshness and oven temperature."]
+  },
+  dry: {
+    name:"Dry / crumbly result",
+    causes:["The product may have been baked too long.","Too much flour or an unbalanced formula can produce a dry or crumbly texture."],
+    fixes:["Weigh flour instead of measuring by volume.","Check doneness earlier next time, using small time increments.","Keep the formula unchanged while testing bake time."]
+  },
+  spread: {
+    name:"Cookie spread too much",
+    causes:["Dough or fat may have been too warm/soft.","The formula may have too little structure for the fat/sugar level."],
+    fixes:["Chill dough if appropriate for the recipe.","Use accurately weighed ingredients and the specified fat state.","Bake one test cookie before baking the full batch."]
+  },
+  cracks: {
+    name:"Cracked / peaked top",
+    causes:["The oven may be too hot, setting the outside before the inside expands fully.","A stiff batter, mixing issue, or pan/formula mismatch may contribute."],
+    fixes:["Verify actual oven temperature.","Check ingredient weights and batter consistency against the recipe.","Change one variable per test bake."]
+  },
+  underbaked: {
+    name:"Gummy / underbaked centre",
+    causes:["The centre may not have reached a set structure.","A very hot oven can brown the outside before the centre finishes baking."],
+    fixes:["Check doneness at the centre with the appropriate test for the product.","Consider a slightly lower temperature and longer bake if the outside is dark but the centre remains raw.","Use the pan size and fill level specified in the recipe."]
+  }
+};
+const escapeHTML = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+document.getElementById("photo").addEventListener("change", e => {
+  const file=e.target.files && e.target.files[0];
+  const preview=document.getElementById("preview");
+  if (!file) { preview.style.display="none"; preview.removeAttribute("src"); return; }
+  if (!file.type.startsWith("image/")) { alert("Please select an image file."); return; }
+  preview.src=URL.createObjectURL(file); preview.style.display="block";
+});
+document.getElementById("diagnose").addEventListener("click", () => {
+  const symptom=document.getElementById("symptom").value;
+  const r=rules[symptom];
+  const product=document.getElementById("product").value;
+  const temp=document.getElementById("temp").value;
+  const time=document.getElementById("time").value;
+  const oven=document.getElementById("oven").value;
+  const recipe=document.getElementById("recipe").value.trim();
+  let notes=[];
+  if (temp && Number(temp)>0) {
+    if (symptom==="burnt" && Number(temp)>=190) notes.push("Your entered temperature is relatively high for many cakes/cookies; compare it with the exact recipe and oven type.");
+    if (symptom==="underbaked" && Number(temp)>=200) notes.push("If the outside is done but the centre is raw, a lower temperature with a longer bake may help; confirm against your recipe.");
+    if (symptom==="pale" && Number(temp)<160) notes.push("A low entered temperature may delay browning; verify the recipe's recommended setting.");
+  }
+  if (oven==="top" && (symptom==="burnt" || symptom==="cracks")) notes.push("Top-rod-only heating can brown the surface quickly in many OTGs.");
+  if (time && Number(time)<=5) notes.push("The entered time is very short for many full-size baked products; check whether this is the total baking time.");
+  const list = arr => "<ul>"+arr.map(x=>"<li>"+escapeHTML(x)+"</li>").join("")+"</ul>";
+  document.getElementById("report").innerHTML =
+    '<div class="result"><span class="tag">Rule-based result · not CNN</span><h3>Likely issue: '+escapeHTML(r.name)+'</h3>'+
+    '<p><strong>Product:</strong> '+escapeHTML(product)+' | <strong>Temperature:</strong> '+escapeHTML(temp||"not entered")+' °C | <strong>Time:</strong> '+escapeHTML(time||"not entered")+' min</p>'+
+    '<strong>Possible causes</strong>'+list(r.causes)+
+    '<strong>Suggested next tests</strong>'+list(r.fixes)+
+    (notes.length ? '<strong>Checks based on your oven settings</strong>'+list(notes) : '')+
+    (recipe ? '<p><strong>Your notes received:</strong> '+escapeHTML(recipe)+'</p>' : '')+
+    '<p class="muted">This is a shortlist of hypotheses, not proof. Image-only diagnosis cannot identify every hidden cause. Record the result of the next test bake to improve your troubleshooting.</p></div>';
+});
+</script>
+</body>
+</html>
